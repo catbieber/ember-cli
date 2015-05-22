@@ -72,6 +72,7 @@ describe('models/builder.js', function() {
 
   describe('Prevent deletion of files for improper outputPath', function() {
     var command;
+    var parentPath = '..' + path.sep + '..' + path.sep;
 
     before(function() {
       command = new BuildCommand(commandOptions({
@@ -86,9 +87,10 @@ describe('models/builder.js', function() {
       });
     });
 
-    it('when outputPath is root directory ie., `--output-path=/`', function() {
-      var outputPathArg = '--output-path=/';
+    it('when outputPath is root directory ie., `--output-path=/` or `--output-path=C:`', function() {
+      var outputPathArg = '--output-path=.';
       var outputPath = command.parseArgs([outputPathArg]).options.outputPath;
+      outputPath = path.parse(outputPath).root;
       builder.outputPath = outputPath;
 
       expect(builder.canDeleteOutputPath(outputPath)).to.equal(false);
@@ -102,8 +104,8 @@ describe('models/builder.js', function() {
       expect(builder.canDeleteOutputPath(outputPath)).to.equal(false);
     });
 
-    it('when outputPath is a parent directory ie., `--output-path=../../`', function() {
-      var outputPathArg = '--output-path=../../';
+    it('when outputPath is a parent directory ie., `--output-path=' + parentPath + '`', function() {
+      var outputPathArg = '--output-path=' + parentPath;
       var outputPath = command.parseArgs([outputPathArg]).options.outputPath;
       builder.outputPath = outputPath;
 
